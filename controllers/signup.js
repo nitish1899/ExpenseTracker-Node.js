@@ -1,34 +1,40 @@
 const bodyParser = require('body-parser');
-const Expense = require('../models/signup');
+const User = require('../models/signup');
 
-// exports.getExpenseDetails = async (req, res, next) => {
-//   const exp = await Expense.findAll();
-//   res.status(201).json({allExpense: exp});
-// };
+const bcrypt = require('bcrypt');
 
-exports.postSignUpDetails = async (req, res, next) => {
+function isstringinvalid(string){
+  if(string == undefined || string.length === 0){
+      return true;
+  } else {
+      return false;
+  }      
+}
+
+exports.postSignUpDetails = async (req, res) => {
   try{
-      if(!req.body.email){
-        throw new Error('Email is mandatory');
-      }
+    const { name, email, password, phNo } = req.body;
+    console.log('email : ',email);
+    if(isstringinvalid(name) || isstringinvalid(email) || isstringinvalid(password) || isstringinvalid(phNo)){
+            return res.status(400).json({err: 'Bad parameters. Something is missing', success: false});
+        }
 
-  const name = req.body.name;
-  const email = req.body.email;
-  const password = req.body.password;
-  const phNo = req.body.phNo;
-  console.log(req.body);
-
-  const data = await Expense.create({name:name, email:email, password:password,phNo:phNo });
-  res.status(201).json({newExpenseDetail: data});
-
+  const saltround = 10;      
+  bcrypt.hash(password, saltround, async (err, hash) =>{
+    console.log(err);
+    const user = await User.findAll({where: {email: email }}); 
+    console.log(user);
+      if(user.length > 0){
+        res.status(200).json({message : 'User already exist'});
+      } else{
+              console.log(req.body);
+              const data = await User.create({name:name, email:email, password:hash, phNo:phNo });
+              res.status(201).json({message: 'Successfully created new user'});
+            }
+  })
+ 
   } catch(err){
     console.log(err);
     res.status(500).json({error:err});
   }
 };
-
-// exports.deleteExpenseDetails = async (req, res, next) => {
-//   const uId = req.params.id;
-//   await Expense.destroy({where: {id: uId}});
-//   res.sendStatus(200);
-// };
