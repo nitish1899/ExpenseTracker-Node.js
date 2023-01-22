@@ -10,14 +10,15 @@ const app = express();
 app.use(cors());
 
 const signupRoutes = require('./routes/signup');
-const loginRoutes = require('./routes/login');
+const expenseRoutes = require('./routes/expense');
 
 app.use(bodyParser.json({ extended: false }));
 
 const { userInfo } = require('os');
 
 app.use('/user',signupRoutes);
-app.use('/Login',loginRoutes);
+app.use('/expense',expenseRoutes);
+
 app.use(errorController.get404);
 
 sequelize.sync()
