@@ -62,7 +62,8 @@
               
               const Post = async () => {
               try{  
-              const response = await axios.post("http://localhost:3000/expense/add-expense",myObj);
+                const token = localStorage.getItem('token');  
+              const response = await axios.post("http://localhost:3000/expense/add-expense",myObj, { headers: {"Authorization" : token}});
               console.log(response);
               showsNewUserOnScreen(response.data.addedExpense);
               } catch(err){
@@ -86,10 +87,10 @@
 
     //deleteUser
     function deleteUser(Description,objid){
-        
+      const token = localStorage.getItem('token');
          removeUserFromScreen(Description);
          const Delete = async () => {
-              const response = await axios.delete(`http://localhost:3000/expense/delete-expense/${objid}`);
+              const response = await axios.delete(`http://localhost:3000/expense/delete-expense/${objid}`, { headers: {"Authorization" : token}});
               console.log(response);
               }
           Delete();
@@ -111,8 +112,9 @@
     }
     
   window.addEventListener("DOMContentLoaded",()=>{
+    const token = localStorage.getItem('token');
     const Get = async () => {
-              const response = await axios.get("http://localhost:3000/expense/get-expense");
+              const response = await axios.get("http://localhost:3000/expense/get-expense", { headers: {"Authorization" : token}});
               console.log("Nitish this is response\n");
               for(var i=0;i<response.data.AllExpenses.length;i++){
                 showsNewUserOnScreen(response.data.AllExpenses[i]);
