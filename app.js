@@ -11,9 +11,11 @@ app.use(cors());
 
 const signupRoutes = require('./routes/user');
 const expenseRoutes = require('./routes/expense');
+const purchaseRoutes = require('./routes/purchase');
 
 const User = require('./models/user');
 const Expense = require('./models/expense');
+const Order = require('./models/orders');
 
 app.use(bodyParser.json({ extended: false }));
 
@@ -21,11 +23,15 @@ const { userInfo } = require('os');
 
 app.use('/user',signupRoutes);
 app.use('/expense',expenseRoutes);
+app.use('/purchase', purchaseRoutes);
 
 app.use(errorController.get404);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
+
+User.hasMany(Order);
+Order.belongsTo(User);
 
 //  {force: true}
 sequelize.sync()
