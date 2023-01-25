@@ -69,12 +69,35 @@ const token = localStorage.getItem('token');
 const Get = async () => {
         const response = await axios.get("http://localhost:3000/expense/get-expense", { headers: {"Authorization" : token}});
         console.log("Nitish this is response\n");
+        const isPremium = response.data.isPremiumUser == null ? false : true;
+        if(isPremium){
+          document.getElementById('rzp-button1').style.display="none";
+          document.getElementById('premiumUser').innerHTML+="You are a premium user  <button onclick=showPremiumFeatures() >Show Leaderboard</button>";
+        }
         for(var i=0;i<response.data.AllExpenses.length;i++){
           showsNewUserOnScreen(response.data.AllExpenses[i]);
         }
 }
 Get();
 })
+
+function showLeaderBoard(name,amount){
+    const parentNode=document.getElementById('leaderboardDetails');
+    const children=`<li id="${name}"> Name : ${name} , Amount : ${amount} </li>`;// unique id for li tag is necessary
+    parentNode.innerHTML=parentNode.innerHTML+children;
+}
+
+
+async function showPremiumFeatures(){
+  const token = localStorage.getItem('token');
+  const response = await axios.get('http://localhost:3000/premium/showLeaderBoard', { headers: {"Authorization" : token}});
+  document.getElementById('Leaderboard').innerHTML+=`<h1> Leaderboard <h1>`;
+
+  for(var i=0;i<response.data.length;i++){
+      console.log(response.data[i].name,response.data[i].amount);
+      showLeaderBoard(response.data[i].name,response.data[i].amount);
+  }
+}
 
 document.getElementById('rzp-button1').onclick = async function(e) {
     const token = localStorage.getItem('token');
@@ -90,6 +113,8 @@ document.getElementById('rzp-button1').onclick = async function(e) {
                 payment_id: response.razorpay_payment_id,
             }, { headers: {"Authorization" : token} })
 
+            document.getElementById('rzp-button1').style.display="none";
+            document.getElementById('premiumUser').innerHTML+="You are a premium user  <button onclick=showPremiumFeatures() >Show Leaderboard</button>";
             alert('You are a Premier User Now');
         },
     };

@@ -29,7 +29,7 @@ exports.getExpenseDetails = async (req, res) => {
         //const expenseDetails = await Expense.findAll({where: {userId: req.user.id}});
         const expenseDetails = await req.user.getExpenses();
         if(expenseDetails){
-            return res.status(200).json( { AllExpenses : expenseDetails });
+            return res.status(200).json( { AllExpenses : expenseDetails , isPremiumUser : req.user.ispremiumuser});
         }
     } catch (err){
         console.log(err);
@@ -40,8 +40,8 @@ exports.getExpenseDetails = async (req, res) => {
 exports.deleteExpenseDetails = async (req, res) => {
     try{ const uId = req.params.id;
          const user = await Expense.findByPk(uId);
-         console.log('element belongs to userId: ',user.dataValues.userId);
-         console.log('logged in user id:',req.user.id)
+         //console.log('element belongs to userId: ',user.dataValues.userId);
+        // console.log('logged in user id:',req.user.id)
          if(req.user.id === user.dataValues.userId){
             const result = await Expense.destroy({where: {id: uId}});
              res.sendStatus(200);

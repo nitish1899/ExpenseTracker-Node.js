@@ -19,7 +19,7 @@ function generateAccessToken(id, name) {
 exports.postSignUpDetails = async (req, res) => {
   try{
     const { name, email, password, phNo } = req.body;
-    console.log('email : ',email);
+    //console.log('email : ',email);
     if(isstringinvalid(name) || isstringinvalid(email) || isstringinvalid(password) || isstringinvalid(phNo)){
             return res.status(400).json({err: 'Bad parameters. Something is missing', success: false});
         }
@@ -28,11 +28,11 @@ exports.postSignUpDetails = async (req, res) => {
   bcrypt.hash(password, saltround, async (err, hash) =>{
     console.log(err);
     const user = await User.findAll({where: {email: email }}); 
-    console.log(user);
+    //console.log(user);
       if(user.length > 0){
         res.status(200).json({message : 'User already exist'});
       } else{
-              console.log(req.body);
+              //console.log(req.body);
               const data = await User.create({name:name, email:email, password:hash, phNo:phNo });
               res.status(201).json({message: 'Successfully created new user'});
             }
@@ -60,7 +60,7 @@ exports.postLoginDetails = async (req, res) => {
                     return res.status(500).json({ success: false, message : 'Something went wrong'}); 
                 }
                 if(result === true){ //isPremiumUser: user[0].ispremiumuser,
-                    return res.status(201).json({ success: true, message: 'Login Successful', isPremiumUser: user[0].ispremiumuser, token : generateAccessToken(user[0].id, user[0].name)});
+                    return res.status(201).json({ success: true, message: 'Login Successful', token : generateAccessToken(user[0].id, user[0].name)});
                 } else {
                     return res.status(401).json({ success: false, message : 'Password is incorrect'});
                 }
