@@ -18,45 +18,45 @@
         <level for="Description" class="form-label">Choose Description:</level>
         <input type="text" id="Description" name="Description" placeholder="item-description" class="form-control" required>
         <level for="Category" class="form-label">Choose a Category:</level>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
-        <script>  
+        
+        <!-- <script>  
             function fetch() {  
             var mylist = document.getElementById("myList");  
             document.getElementById("myList").value = mylist.options[mylist.selectedIndex].text;  
             }  
-        </script>  
-
-        
-        <select  name="Category" id = "myList" onchange = "fetch()" >  
+        </script>   -->
+        <select  name="Category" id = "Category">  
             <div class="overflow-auto">
-            <option> Fuel </option>  
-            <option> Food </option>  
-            <option> Medical </option>  
-            <option> Electricity </option>
-            <option> Vehicle </option> 
-            <option> Shop </option>
-            <option> Vacation </option>
-            <option> Sports </option>
-            <option> Accessories</option>
-            <option> Banking </option>
-            <option> Gas </option>
+            <option value="Fuel"> Fuel </option>  
+            <option value="Food"> Food </option>  
+            <option value="Medical"> Medical </option>  
+            <option value="Electricity"> Electricity </option>
+            <option value="Vehicle"> Vehicle </option> 
+            <option value="Shop"> Shop </option>
+            <option value="Vaction"> Vacation </option>
+            <option value="Sports"> Sports </option>
+            <option value="Accessories"> Accessories</option>
+            <option value="Banking"> Banking </option>
+            <option value="Gas"> Gas </option>
             </div>
-            </select>    
-            
+            </select>      
         <button>AddExpense</button>        
     </form>
 
     <button id="rzp-button1">Buy Premium</button>
-    <div id="premiumUser"></div><br><br>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <button onclick="download()" id="downloadexpense">Download File</button>
+    <div id="premiumUser"></div><br><br>  
   </div> 
+
   <div class="container">
     <h1>Expenses</h1> 
-    <ul id="listOfUsers"></ul><br><br>
+    <ul id="listOfExpenses"></ul><br><br>
     <div id="Leaderboard"></div>
     <ul id="leaderboardDetails"></ul>
   </div>  
-    <script src="./index.js"></script>
-    </body>
-    
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
+  <script src="./index.js"></script>
+</body>    
 </html>

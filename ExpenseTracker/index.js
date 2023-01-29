@@ -1,71 +1,77 @@
+const token = localStorage.getItem('token'); 
+
 let form=document.getElementById('formItem'); 
 form.addEventListener('submit',function(event){
   event.preventDefault()// prevent the form fromautosubmitting
-     const amount=event.target.ExpanseAmount.value;
-     const items=event.target.Description.value;
-     const catg=event.target.Category.value;
- // const {ExpanseAmount, Description, Category} = event.target.value;
-     
-    // Storing Objects
-        let myObj={
-          amount:amount,
-          description:items,
-          category:catg
+    
+        const myObj={
+          amount:event.target.ExpanseAmount.value,
+          description:event.target.Description.value,
+          category:event.target.Category.value
         };
         
         const Post = async () => {
-        try{  
-          const token = localStorage.getItem('token');  
-        const response = await axios.post("http://localhost:3000/expense/add-expense",myObj, { headers: {"Authorization" : token}});
-        console.log(response);
-        showsNewUserOnScreen(response.data.addedExpense);
-        } catch(err){
-          console.log(err);
-        }
+          try{    
+          const response = await axios.post("http://localhost:3000/expense/add-expense",myObj, { headers: {"Authorization" : token}});
+          console.log(response);
+          addNewExpensetoUI(response.data.addedExpense);
+          } catch(err){
+            console.log(err);
+          }
         }
         Post();  
 })
 
-function showsNewUserOnScreen(user){
-document.getElementById('ExpanseAmount').value="";
-document.getElementById('Description').value="";
+function addNewExpensetoUI(expense){
+// document.getElementById('ExpanseAmount').value="";
+// document.getElementById('Description').value="";
+const expenseElemId = `expense-${expense.id}`;
 
-const parentNode=document.getElementById('listOfUsers');
-const children=`<li id="${user.description}"> ${user.amount}-${user.description}-${user.category}
-                <button onclick=deleteUser('${user.description}','${user.id}')>DeleteExpense</button> 
-                <button onclick=editUser('${user.amount}','${user.description}','${user.id}')>EditExpense</button> 
+const parentNode=document.getElementById('listOfExpenses');
+const children=`<li id=${expenseElemId}>
+                   ${expense.amount}-${expense.description}-${expense.category}
+                <button onclick=deleteExpense('${expense.id}')>DeleteExpense</button> 
+                <button onclick=editExpense('${expense.amount}','${expense.description}','${expense.id}')>EditExpense</button> 
                 </li>`;
 parentNode.innerHTML=children+parentNode.innerHTML;
 }
 
 //deleteUser
-function deleteUser(Description,objid){
-const token = localStorage.getItem('token');
-   removeUserFromScreen(Description);
+function deleteExpense(expenseid){
    const Delete = async () => {
-        const response = await axios.delete(`http://localhost:3000/expense/delete-expense/${objid}`, { headers: {"Authorization" : token}});
+        const response = await axios.delete(`http://localhost:3000/expense/delete-expense/${expenseid}`, { headers: {"Authorization" : token}});
         console.log(response);
+        try{
+            if(response.status === 200){
+              removeExpenseFromUI(expenseid);
+            } else {
+              throw new Error('Failed to delete');
+            }
+          } catch(err) { 
+            showError(err);
+          }
         }
     Delete();
 }
 
+function showError(err){
+  document.body.innerHTML += `<div style="color:red;"> ${err}</div>`
+}
+
 //editUser
-function editUser(amount,Description,objid){
+function editExpense(amount,Description,expenseid){
   document.getElementById('ExpanseAmount').value=amount;
   document.getElementById('Description').value=Description;
-  deleteUser(Description,objid);
+  deleteExpense(expenseid);
 }
 
-function  removeUserFromScreen(Description){
-const parentNode=document.getElementById('listOfUsers');
-const childNodeToBeDeleted=document.getElementById(Description);
-if(childNodeToBeDeleted){
-  parentNode.removeChild(childNodeToBeDeleted);
-}
+function  removeExpenseFromUI(expenseid){
+const parentNode=document.getElementById('listOfExpenses');
+const expenseElemId = `expense-${expenseid}`;
+document.getElementById(expenseElemId).remove();
 }
 
-window.addEventListener("DOMContentLoaded",()=>{
-const token = localStorage.getItem('token');
+window.addEventListener("load",()=>{
 const Get = async () => {
         const response = await axios.get("http://localhost:3000/expense/get-expense", { headers: {"Authorization" : token}});
         console.log("Nitish this is response\n");
@@ -74,8 +80,10 @@ const Get = async () => {
           document.getElementById('rzp-button1').style.display="none";
           document.getElementById('premiumUser').innerHTML+="You are a premium user  <button onclick=showPremiumFeatures() >Show Leaderboard</button>";
         }
-        for(var i=0;i<response.data.AllExpenses.length;i++){
-          showsNewUserOnScreen(response.data.AllExpenses[i]);
+        if(response.status === 200){
+          for(var i=0;i<response.data.AllExpenses.length;i++){
+            showsNewUserOnScreen(response.data.AllExpenses[i]);
+          }
         }
 }
 Get();
@@ -87,6 +95,24 @@ function showLeaderBoard(name,amount){
     parentNode.innerHTML=parentNode.innerHTML+children;
 }
 
+function download(){
+  axios.get('http://localhost:3000/user/download',{ headers: {"Authorization" : token} })
+  .then((response) => {
+    if(response.status === 201) { 
+      // the backend is essentially sending a downloading link
+      // which will be open in browser , the file would download
+      var a = document.createElement("a");
+      a.href = response.data.fileUrl;
+      a.download = 'myexpense.csv';
+      a.click();
+    } else {
+      throw new Error(response.data.message)
+    }
+  })
+  .catch((err) => {
+    showError(err);
+  });
+}
 
 async function showPremiumFeatures(){
   const token = localStorage.getItem('token');
