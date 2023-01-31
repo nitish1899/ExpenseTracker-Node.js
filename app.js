@@ -22,6 +22,7 @@ const User = require('./models/user');
 const Expense = require('./models/expense');
 const Order = require('./models/orders');
 const ForgotPassword = require('./models/forgotPassword');
+const Downloads = require('./models/download');
 
 app.use(bodyParser.json({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -44,6 +45,9 @@ Order.belongsTo(User);
 
 User.hasMany(ForgotPassword);
 ForgotPassword.belongsTo(User);
+
+User.hasMany(Downloads);
+Downloads.belongsTo(User);
 
 //  {force: true}
 sequelize.sync()

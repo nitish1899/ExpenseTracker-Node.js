@@ -1,5 +1,10 @@
 const bodyParser = require('body-parser');
 const Expense = require('../models/expense');
+const Downloads = require('../models/download');
+const UserServices = require('../services/userServices');
+const S3Services = require('../services/s3services');
+const uuid = require('uuid');
+
 
 function isstringinvalid(string){
   if(string == undefined || string.length === 0){
@@ -48,4 +53,37 @@ exports.deleteExpenseDetails = async (req, res) => {
          }
     } catch (err) {
         return res.status(500).json({err: 'Something went wrong', success: false});
-    }}
+    }
+}
+
+exports.downloadexpense = async (req,res) => {
+    try {
+      const expenses = await UserServices.getExpenses(req); // here expenses are array. 
+      console.log(expenses);
+      const stringifiedExpenses = JSON.stringify(expenses); // converting array to string 
+      // filename should depend upon userid
+      const userid = req.user.id;
+
+      const filename = `Expense${userid}/${new Date()}.txt`;
+      const fileUrl = await S3Services.uploadToS3(stringifiedExpenses, filename);
+      console.log(fileUrl);
+      const id = uuid.v4();
+      const urladdedtotable = await Downloads.create({id, fileUrl, userId:req.user.id });
+      console.log('urladdedtotable : ',urladdedtotable);
+      res.status(201).json({ fileUrl, success: true});
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({ fileUrl:'', success: false, err: err});  
+    }  
+}    
+
+exports.getUrlTable = async (req,res) => {
+    try{
+        const response = await Downloads.findAll({where : {userId : req.user.id}});
+        res.status(201).json({response,success: true})
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, message: err}); 
+    }
+
+}

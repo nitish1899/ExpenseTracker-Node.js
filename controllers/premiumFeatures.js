@@ -8,19 +8,23 @@ const getLeaderBoard = async (req,res) => {
             attributes : ['id', 'name']
         });
         //console.log(users);
-        const userAggregatedExpense = await Expense.findAll({
-            attributes : [ [sequelize.fn('sum',sequelize.col('amount')),'userId']],
-            group: ['userId']
-        });
-        //console.log(userAggregatedExpense);
-       //const userAggregatedExpense = {};
-        // expenses.forEach(expense => {
-        //     if(userAggregatedExpense[expense.userId]){
-        //         userAggregatedExpense[expense.userId] =  userAggregatedExpense[expense.userId] + expense.amount;
-        //     } else {
-        //         userAggregatedExpense[expense.userId] = expense.amount; 
-        //     }
+        // const userAggregatedExpense = await Expense.findAll({
+        //     attributes : ['userId', [sequelize.fn('sum',sequelize.col('amount')),'total_cost']],
+        //     group: ['userId']
         // });
+
+        const expenses = await Expense.findAll({
+            attributes : ['userId', 'amount'],
+        });
+        //console.log(expenses);
+       const userAggregatedExpense = {};
+        expenses.forEach(expense => {
+            if(userAggregatedExpense[expense.userId]){
+                userAggregatedExpense[expense.userId] =  userAggregatedExpense[expense.userId] + expense.amount;
+            } else {
+                userAggregatedExpense[expense.userId] = expense.amount; 
+            }
+        });
        
         const userLeaderBoard = [];
         users.forEach(user => {
@@ -30,7 +34,7 @@ const getLeaderBoard = async (req,res) => {
         //console.log(userLeaderBoard);
 
         console.log(userAggregatedExpense);
-        res.status(200).json(userAggregatedExpense);
+        res.status(200).json(userLeaderBoard);
     } catch(err) {
        console.log(err);
        res.status(500).json(err);

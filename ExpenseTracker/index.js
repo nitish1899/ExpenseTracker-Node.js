@@ -23,8 +23,6 @@ form.addEventListener('submit',function(event){
 })
 
 function addNewExpensetoUI(expense){
-// document.getElementById('ExpanseAmount').value="";
-// document.getElementById('Description').value="";
 const expenseElemId = `expense-${expense.id}`;
 
 const parentNode=document.getElementById('listOfExpenses');
@@ -79,10 +77,12 @@ const Get = async () => {
         if(isPremium){
           document.getElementById('rzp-button1').style.display="none";
           document.getElementById('premiumUser').innerHTML+="You are a premium user  <button onclick=showPremiumFeatures() >Show Leaderboard</button>";
+          document.getElementById('downloadexpense').innerHTML+="<button onclick=download()>Download File</button>";
+          document.getElementById('urlTable').innerHTML+="<button onclick=showUrlTable()>Recent Downloads</button>";
         }
         if(response.status === 200){
           for(var i=0;i<response.data.AllExpenses.length;i++){
-            showsNewUserOnScreen(response.data.AllExpenses[i]);
+            addNewExpensetoUI(response.data.AllExpenses[i]);
           }
         }
 }
@@ -95,8 +95,14 @@ function showLeaderBoard(name,amount){
     parentNode.innerHTML=parentNode.innerHTML+children;
 }
 
+function showListOfUrl(url){
+  const parentNode=document.getElementById('listOfURL');
+  const children=`<li id="${url}"> url : ${url}</li>`;// unique id for li tag is necessary
+  parentNode.innerHTML=parentNode.innerHTML+children;
+}
+
 function download(){
-  axios.get('http://localhost:3000/user/download',{ headers: {"Authorization" : token} })
+  axios.get('http://localhost:3000/expense/download',{ headers: {"Authorization" : token} })
   .then((response) => {
     if(response.status === 201) { 
       // the backend is essentially sending a downloading link
@@ -114,8 +120,24 @@ function download(){
   });
 }
 
+function showUrlTable(){
+  axios.get('http://localhost:3000/expense/urlTable',{ headers: {"Authorization" : token} })
+  .then((response) => {
+    if(response.status === 201) { // UrlList
+      document.getElementById('UrlList').innerHTML += 'URL Lists';
+      for(var i=0;i<response.data.response.length;i++){
+         showListOfUrl(response.data.response[i].fileUrl);
+      }
+    } else {
+      throw new Error(response.data.message)
+    }
+  })
+  .catch((err) => {
+    showError(err);
+  });
+}
+
 async function showPremiumFeatures(){
-  const token = localStorage.getItem('token');
   const response = await axios.get('http://localhost:3000/premium/showLeaderBoard', { headers: {"Authorization" : token}});
   document.getElementById('Leaderboard').innerHTML+=`<h1> Leaderboard <h1>`;
 
@@ -126,7 +148,6 @@ async function showPremiumFeatures(){
 }
 
 document.getElementById('rzp-button1').onclick = async function(e) {
-    const token = localStorage.getItem('token');
     const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: {"Authorization" : token}});
     console.log(response);
     var options = {
@@ -141,6 +162,8 @@ document.getElementById('rzp-button1').onclick = async function(e) {
 
             document.getElementById('rzp-button1').style.display="none";
             document.getElementById('premiumUser').innerHTML+="You are a premium user  <button onclick=showPremiumFeatures() >Show Leaderboard</button>";
+            document.getElementById('downloadexpense').innerHTML+="<button onclick=download()>Download File</button>";
+            document.getElementById('urlTable').innerHTML+="<button onclick=showUrlTable()>Recent Downloads</button>";
             alert('You are a Premier User Now');
         },
     };
