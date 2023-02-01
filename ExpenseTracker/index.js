@@ -1,4 +1,7 @@
 const token = localStorage.getItem('token'); 
+//const pagination = document.getElementById('pagination');
+const pagination= document.createElement('div');
+document.body.appendChild(pagination);
 
 let form=document.getElementById('formItem'); 
 form.addEventListener('submit',function(event){
@@ -26,6 +29,7 @@ function addNewExpensetoUI(expense){
 const expenseElemId = `expense-${expense.id}`;
 
 const parentNode=document.getElementById('listOfExpenses');
+//parentNode.innerHTML='';
 const children=`<li id=${expenseElemId}>
                    ${expense.amount}-${expense.description}-${expense.category}
                 <button onclick=deleteExpense('${expense.id}')>DeleteExpense</button> 
@@ -69,9 +73,57 @@ const expenseElemId = `expense-${expenseid}`;
 document.getElementById(expenseElemId).remove();
 }
 
+function showPagination({
+  currentPage,
+  hasNextPage,
+  nextPage,
+  hasPreviousPage,
+  previousPage,
+  lastPage,
+}) {
+ 
+ 
+  if(hasPreviousPage){
+    const btn2 = document.createElement('button')
+    btn2.innerHTML = previousPage
+    btn2.addEventListener('click', () => getExpenses(previousPage))
+    pagination.appendChild(btn2)
+  }
+
+  const btn1 = document.createElement('button')
+  btn1.innerHTML = `<h3>${currentPage}</h3>`
+  btn1.addEventListener('click', () => getExpenses(currentPage))
+  pagination.appendChild(btn1)
+
+ if(hasNextPage) { 
+    const btn3 = document.createElement('button')
+    btn3.innerHTML = nextPage
+    btn3.addEventListener('click', () => getExpenses(nextPage))
+    pagination.appendChild(btn3)
+ }
+}
+
+function getExpenses(page){
+       axios
+             .get(`http://localhost:3000/expense/get-expense?page=${page}`, { headers: {"Authorization" : token}})
+             .then((response) => {
+              pagination.innerHTML = '';
+              showPagination(response.data);
+              const parentNode=document.getElementById('listOfExpenses');
+              parentNode.innerHTML='';
+              if(response.status === 200){
+                for(var i=0;i<response.data.AllExpenses.length;i++){
+                  addNewExpensetoUI(response.data.AllExpenses[i]);
+                }
+              } 
+             })
+             .catch((err) => console.log(err));
+}
+
 window.addEventListener("load",()=>{
 const Get = async () => {
-        const response = await axios.get("http://localhost:3000/expense/get-expense", { headers: {"Authorization" : token}});
+        const page = 1;
+        const response = await axios.get(`http://localhost:3000/expense/get-expense?page=${page}`, { headers: {"Authorization" : token}});
         console.log("Nitish this is response\n");
         const isPremium = response.data.isPremiumUser == null ? false : true;
         if(isPremium){
@@ -80,11 +132,12 @@ const Get = async () => {
           document.getElementById('downloadexpense').innerHTML+="<button onclick=download()>Download File</button>";
           document.getElementById('urlTable').innerHTML+="<button onclick=showUrlTable()>Recent Downloads</button>";
         }
+        showPagination(response.data);
         if(response.status === 200){
           for(var i=0;i<response.data.AllExpenses.length;i++){
             addNewExpensetoUI(response.data.AllExpenses[i]);
           }
-        }
+        } 
 }
 Get();
 })
@@ -121,7 +174,10 @@ function download(){
 }
 
 function showUrlTable(){
-  axios.get('http://localhost:3000/expense/urlTable',{ headers: {"Authorization" : token} })
+  //const page =1;
+  //axios.get(`http://localhost:3000/expense/urlTable?page=${page}`,{ headers: {"Authorization" : token} })
+  //showPagination(response.data);
+  axios.get(`http://localhost:3000/expense/urlTable`,{ headers: {"Authorization" : token} })
   .then((response) => {
     if(response.status === 201) { // UrlList
       document.getElementById('UrlList').innerHTML += 'URL Lists';
@@ -138,7 +194,10 @@ function showUrlTable(){
 }
 
 async function showPremiumFeatures(){
-  const response = await axios.get('http://localhost:3000/premium/showLeaderBoard', { headers: {"Authorization" : token}});
+  // const page = 1;
+  // const response = await axios.get(`http://localhost:3000/premium/showLeaderBoard?page=${page}`, { headers: {"Authorization" : token}});
+  // showPagination(response.data);
+  const response = await axios.get(`http://localhost:3000/premium/showLeaderBoard`, { headers: {"Authorization" : token}});
   document.getElementById('Leaderboard').innerHTML+=`<h1> Leaderboard <h1>`;
 
   for(var i=0;i<response.data.length;i++){

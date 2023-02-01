@@ -4,7 +4,7 @@ const Downloads = require('../models/download');
 const UserServices = require('../services/userServices');
 const S3Services = require('../services/s3services');
 const uuid = require('uuid');
-
+const ITEMS_PER_PAGE = 3;
 
 function isstringinvalid(string){
   if(string == undefined || string.length === 0){
@@ -31,11 +31,36 @@ exports.postExpenseDetails = async (req, res) => {
 
 exports.getExpenseDetails = async (req, res) => {
     try{
+        const page = req.query.page || 1;
+        let totalItems ;
+        Expense.count({ where: {userId: req.user.id}})
+        .then((total) => {
+            totalItems = total;
+           // console.log('totalItems is :',totalItems);
+            return Expense.findAll({ where: {userId: req.user.id},
+                offset: (page-1) * ITEMS_PER_PAGE,
+                limit: ITEMS_PER_PAGE            
+            })
+        })
+        .then((expenseDetails) => {
+           // console.log('ITEMS_PER_PAGE * page is:',ITEMS_PER_PAGE * page);
+            return res.status(200).json({
+                AllExpenses : expenseDetails ,
+                isPremiumUser : req.user.ispremiumuser,
+                currentPage: page,
+                hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+                nextPage: +page+1,
+                hasPreviousPage:page>1,
+                previousPage:+page-1,
+                lastPage:Math.ceil(totalItems / ITEMS_PER_PAGE)
+            });
+        })
+        .catch((err) => console.log(err));
         //const expenseDetails = await Expense.findAll({where: {userId: req.user.id}});
-        const expenseDetails = await req.user.getExpenses();
-        if(expenseDetails){
-            return res.status(200).json( { AllExpenses : expenseDetails , isPremiumUser : req.user.ispremiumuser});
-        }
+        // const expenseDetails = await req.user.getExpenses();
+        // if(expenseDetails){
+        //     return res.status(200).json( { AllExpenses : expenseDetails , isPremiumUser : req.user.ispremiumuser});
+        // }
     } catch (err){
         console.log(err);
         return res.status(500).json({err: 'Something went wrong', success: false});
