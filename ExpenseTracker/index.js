@@ -2,6 +2,15 @@ const token = localStorage.getItem('token');
 //const pagination = document.getElementById('pagination');
 const pagination= document.createElement('div');
 document.body.appendChild(pagination);
+const ShowItems =  document.getElementById('Item_Per_Page');
+ShowItems.onchange = ShowPerPage;
+var itemPerPage =2;
+const ItemPerPage = localStorage.getItem('ItemPerPage');
+
+function ShowPerPage(){
+  itemPerPage = Number(this.value);
+  localStorage.setItem('ItemPerPage',itemPerPage);
+}
 
 let form=document.getElementById('formItem'); 
 form.addEventListener('submit',function(event){
@@ -31,7 +40,7 @@ const expenseElemId = `expense-${expense.id}`;
 const parentNode=document.getElementById('listOfExpenses');
 //parentNode.innerHTML='';
 const children=`<li id=${expenseElemId}>
-                   ${expense.amount}-${expense.description}-${expense.category}
+                  ${expense.amount}-${expense.description}-${expense.category}
                 <button onclick=deleteExpense('${expense.id}')>DeleteExpense</button> 
                 <button onclick=editExpense('${expense.amount}','${expense.description}','${expense.id}')>EditExpense</button> 
                 </li>`;
@@ -104,8 +113,10 @@ function showPagination({
 }
 
 function getExpenses(page){
+   console.log('ItemPerPage  is : ',`${ItemPerPage}`);
+  // &itemPerPage=${ItemPerPage}
        axios
-             .get(`http://localhost:3000/expense/get-expense?page=${page}`, { headers: {"Authorization" : token}})
+             .get(`http://localhost:3000/expense/get-expense?page=${page}&itemPerPage=${ItemPerPage}`, { headers: {"Authorization" : token}})
              .then((response) => {
               pagination.innerHTML = '';
               showPagination(response.data);
@@ -122,8 +133,8 @@ function getExpenses(page){
 
 window.addEventListener("load",()=>{
 const Get = async () => {
-        const page = 1;
-        const response = await axios.get(`http://localhost:3000/expense/get-expense?page=${page}`, { headers: {"Authorization" : token}});
+        const page = 1; // &itemPerPage=${itemPerPage}
+        const response = await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&itemPerPage=${ItemPerPage}`, { headers: {"Authorization" : token}});
         console.log("Nitish this is response\n");
         const isPremium = response.data.isPremiumUser == null ? false : true;
         if(isPremium){

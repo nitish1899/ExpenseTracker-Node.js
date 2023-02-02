@@ -4,7 +4,7 @@ const Downloads = require('../models/download');
 const UserServices = require('../services/userServices');
 const S3Services = require('../services/s3services');
 const uuid = require('uuid');
-const ITEMS_PER_PAGE = 3;
+var ITEMS_PER_PAGE =2 ;
 
 function isstringinvalid(string){
   if(string == undefined || string.length === 0){
@@ -31,6 +31,11 @@ exports.postExpenseDetails = async (req, res) => {
 
 exports.getExpenseDetails = async (req, res) => {
     try{
+        const x = +(req.query.itemPerPage || 1);
+        //console.log(typeof(x));
+        ITEMS_PER_PAGE = x  ;
+        //console.log('ITEMS_PER_PAGE is : ',req.query.itemPerPage);
+         //console.log(typeof(req.query.itemPerPage));
         const page = req.query.page || 1;
         let totalItems ;
         Expense.count({ where: {userId: req.user.id}})
