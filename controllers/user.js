@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
 const User = require('../models/user');
+require("dotenv").config();
 
 const bcrypt = require('bcrypt'); // It is  one way encryption
 const jwt = require('jsonwebtoken');
@@ -13,7 +14,7 @@ function isstringinvalid(string){
 }
 
 function generateAccessToken(id, name) {
-  return jwt.sign({ userId : id , name: name}, 'secretKey');
+  return jwt.sign({ userId : id , name: name}, process.env.TOKEN_SECRET);
 }
 
 exports.postSignUpDetails = async (req, res) => {
@@ -24,7 +25,7 @@ exports.postSignUpDetails = async (req, res) => {
             return res.status(400).json({err: 'Bad parameters. Something is missing', success: false});
         }
 
-  const saltround = 10;      
+  const saltround = +(process.env.SALT_ROUND);      
   bcrypt.hash(password, saltround, async (err, hash) =>{
     console.log(err);
     const user = await User.findAll({where: {email: email }}); 

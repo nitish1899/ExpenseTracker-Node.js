@@ -1,9 +1,7 @@
 const uuid = require('uuid');
 const sgMail = require('@sendgrid/mail');
 const bcrypt = require('bcrypt');
-const sequelize = require('../util/database');
-
-const SENDGRID_API_KEY='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';
+// const SENDGRID_API_KEY='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';
 const User = require('../models/user');
 const Forgotpassword = require('../models/forgotPassword');
 
@@ -21,7 +19,7 @@ const forgotpassword = async (req, res) => {
                     throw new Error(err)
                 }
 
-            sgMail.setApiKey(SENDGRID_API_KEY)
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
             const msg = {
                 to: email, // Change to your recipient
@@ -92,7 +90,7 @@ const updatepassword = (req, res) => {
                 if(user) {
                     //encrypt the password
 
-                    const saltRounds = 10;
+                    const saltRounds = +(process.env.SALT_ROUND);
                     bcrypt.genSalt(saltRounds, function(err, salt) {
                         if(err){
                             console.log(err);

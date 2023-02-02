@@ -1,6 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const errorController = require('./controllers/error');
+const helmet = require('helmet');
+//const compression = require('compression');
+const morgan = require('morgan');
+const path = require('path');
+const fs = require('fs');
 
 const sequelize = require('./util/database');
 // const sgMail = require('@sendgrid/mail')
@@ -10,7 +15,15 @@ const app = express();
 
 require("dotenv").config();
 
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, 'access.log'),
+  { flags: 'a'}
+);
+
 app.use(cors());
+app.use(helmet());
+//app.use(compression()); // it is use to render view . Here we dont need it
+app.use(morgan('combined', {stream : accessLogStream}));
 
 const signupRoutes = require('./routes/user');
 const expenseRoutes = require('./routes/expense');
@@ -49,10 +62,11 @@ ForgotPassword.belongsTo(User);
 User.hasMany(Downloads);
 Downloads.belongsTo(User);
 
+console.log(process.env.NODE_ENV);// express.js use it as default to detrermine environment mode
 //  {force: true}
 sequelize.sync()
 .then(result => {
   //console.log(result);
-  app.listen(3000);
+  app.listen(process.env.PORT || 5000);
 })
 .catch(err => console.log(err));
