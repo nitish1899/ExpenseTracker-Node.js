@@ -12,6 +12,7 @@ function ShowPerPage(){
   localStorage.setItem('ItemPerPage',itemPerPage);
 }
 
+
 let form=document.getElementById('formItem'); 
 form.addEventListener('submit',function(event){
   event.preventDefault()// prevent the form fromautosubmitting
@@ -33,6 +34,7 @@ form.addEventListener('submit',function(event){
         }
         Post();  
 })
+
 
 function addNewExpensetoUI(expense){
 const expenseElemId = `expense-${expense.id}`;

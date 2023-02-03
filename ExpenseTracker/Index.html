@@ -25,6 +25,7 @@
             document.getElementById("myList").value = mylist.options[mylist.selectedIndex].text;  
             }  
         </script>   -->
+        
         <select  name="Category" id = "Category">  
             <div class="overflow-auto">
             <option value="Fuel"> Fuel </option>  
@@ -50,6 +51,20 @@
   </div> 
 
   <div class="container">
+    <div class="items-controller">
+      <h5>Show 
+    <select id = "Item_Per_Page">
+      <option value="0">00</option>
+      <option value="2">02</option>
+      <option value="4">04</option>
+      <option value="5">05</option>
+      <option value="8">08</option>
+      <option value="20">20</option>
+      <option value="30">30</option>
+      <option value="40">40</option>
+    </select>
+    Per Page</h5>
+    </div>
     <h1>Expenses</h1> 
     <ul id="listOfExpenses"></ul><br><br>
     <div id="Leaderboard"></div>

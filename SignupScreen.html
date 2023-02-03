@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous"> -->
   <title>Item Lister</title>
 </head>
 <body>
   
     <form id="formItem">
-        <level>Name</level><br>
-        <input type="text" id="Name" name="name" placeholder="Name" required><br>
+        
+  Name: <input type="text" id="Name" name="name" placeholder="Name" required><br>
         <level>Email</level><br>
         <input type="email" id="Email" name="email" placeholder="Email" required><br>
         <level>Password</level><br>
@@ -21,7 +21,7 @@
         <button>SignUp</button>        
     </form>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script> -->
 
     <script>
       let form=document.getElementById('formItem'); 
@@ -40,16 +40,17 @@
                 number:number
               };
 
-              const Post = async () => {
-                  try{  
-                  const response = await axios.post("http://localhost:3000/user/add-user",myObj);
-                  console.log(response);
-                  }
-                  catch(err) {
-                    console.log(err);
-                  }  
-              }
-              Post();
+              console.log(myObj);
+              // const Post = async () => {
+              //     try{  
+              //     const response = await axios.post("http://localhost:3000/user/add-user",myObj);
+              //     console.log(response);
+              //     }
+              //     catch(err) {
+              //       console.log(err);
+              //     }  
+              // }
+              // Post();
     })
     </script>
     </body>

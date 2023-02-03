@@ -47,6 +47,7 @@ app.use('/purchase', purchaseRoutes);
 app.use('/premium',premiumRoutes);
 app.use('/password',passwordRoutes);
 
+
 app.use(errorController.get404);
 
 User.hasMany(Expense);
