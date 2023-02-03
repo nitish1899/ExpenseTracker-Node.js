@@ -7,13 +7,12 @@ const morgan = require('morgan');
 const path = require('path');
 const fs = require('fs');
 
+require("dotenv").config();
 const sequelize = require('./util/database');
 // const sgMail = require('@sendgrid/mail')
 
 var cors = require('cors');
 const app = express();
-
-require("dotenv").config();
 
 const accessLogStream = fs.createWriteStream(
   path.join(__dirname, 'access.log'),
@@ -66,7 +65,6 @@ console.log(process.env.NODE_ENV);// express.js use it as default to detrermine 
 //  {force: true}
 sequelize.sync()
 .then(result => {
-  //console.log(result);
   app.listen(process.env.PORT || 5000);
 })
 .catch(err => console.log(err));
