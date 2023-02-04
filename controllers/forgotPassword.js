@@ -90,7 +90,7 @@ const updatepassword = (req, res) => {
                 if(user) {
                     //encrypt the password
 
-                    const saltRounds = +(process.env.SALT_ROUND);
+                    const saltRounds = 10;
                     bcrypt.genSalt(saltRounds, function(err, salt) {
                         if(err){
                             console.log(err);

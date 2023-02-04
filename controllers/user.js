@@ -25,7 +25,7 @@ exports.postSignUpDetails = async (req, res) => {
             return res.status(400).json({err: 'Bad parameters. Something is missing', success: false});
         }
 
-  const saltround = +(process.env.SALT_ROUND);      
+  const saltround = 10;      
   bcrypt.hash(password, saltround, async (err, hash) =>{
     console.log(err);
     const user = await User.findAll({where: {email: email }}); 
