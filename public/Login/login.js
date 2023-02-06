@@ -13,6 +13,7 @@ async function login(event) {
         alert(response.data.message);
         localStorage.setItem('token', response.data.token);
         window.location.href='../ExpenseTracker/index.html';
+        
     } catch(err) {
         document.body.innerHTML += `<div style="color:red;">${err} </div>`;
     }

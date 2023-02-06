@@ -12,7 +12,6 @@ function ShowPerPage(){
   localStorage.setItem('ItemPerPage',itemPerPage);
 }
 
-
 let form=document.getElementById('formItem'); 
 form.addEventListener('submit',function(event){
   event.preventDefault()// prevent the form fromautosubmitting
@@ -39,7 +38,6 @@ function addNewExpensetoUI(expense){
 const expenseElemId = `expense-${expense.id}`;
 
 const parentNode=document.getElementById('listOfExpenses');
-//parentNode.innerHTML='';
 const children=`<li id=${expenseElemId}>
                   ${expense.amount}-${expense.description}-${expense.category}
                 <button onclick=deleteExpense('${expense.id}')>DeleteExpense</button> 

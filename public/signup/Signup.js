@@ -16,6 +16,7 @@ async function signup(event) {
         const response = await axios.post('http://13.235.134.206:3000/user/signup',signupDetails);
         if(response.status === 201){ 
            alert(response.data.message);
+           
            // redirecting the user on successful signup
            window.location.href = '../Login/login.html'
         } else if(response.status === 200){
