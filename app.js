@@ -12,6 +12,7 @@ const sequelize = require('./util/database');
 // const sgMail = require('@sendgrid/mail')
 
 var cors = require('cors');
+
 const app = express();
 
 const accessLogStream = fs.createWriteStream(
@@ -36,16 +37,21 @@ const Order = require('./models/orders');
 const ForgotPassword = require('./models/forgotPassword');
 const Downloads = require('./models/download');
 
+app.use(express.json()); // this is for handling json
 app.use(bodyParser.json({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
-
-const { userInfo } = require('os');
 
 app.use('/user',signupRoutes);
 app.use('/expense',expenseRoutes);
 app.use('/purchase', purchaseRoutes);
 app.use('/premium',premiumRoutes);
 app.use('/password',passwordRoutes);
+
+app.use((req,res) => {
+  console.log('url : ',req.url);
+  res.sendFile(path.join(__dirname,`public/${req.url}`));
+})
+
 app.use(errorController.get404);
 
 User.hasMany(Expense);

@@ -26,7 +26,7 @@ const forgotpassword = async (req, res) => {
                 from: 'nkword1899@gmail.com', // Change to your verified sender
                 subject: 'Sending with SendGrid is Fun',
                 text: 'and easy to do anywhere, even with Node.js',
-                html: `<a href="http://localhost:3000/password/resetpassword/${id}">Reset password</a>`,
+                html: `<a href="http://13.235.134.206:3000/password/resetpassword/${id}">Reset password</a>`,
             }
 
             sgMail
@@ -36,7 +36,7 @@ const forgotpassword = async (req, res) => {
                 // console.log(response[0].statusCode)
                 // console.log(response[0].headers)
                 //return res.status(response[0].statusCode).json({message: 'Link to reset password sent to your mail ', sucess: true})
-                return res.status(response[0].statusCode).send(`<a href="http://localhost:3000/password/resetpassword/${id}">Reset password</a>`)
+                return res.status(response[0].statusCode).send(`<a href="http://13.235.134.206:3000/password/resetpassword/${id}">Reset password</a>`)
 
             })
             .catch((error) => {
