@@ -9,12 +9,13 @@ const fs = require('fs');
 
 require("dotenv").config();
 const sequelize = require('./util/database');
-// const sgMail = require('@sendgrid/mail')
 
 var cors = require('cors');
 
 const app = express();
 
+//createWriteStream : reads sequentially from the current file position.
+// flag:a  open file for appending . the file is created if it does not exist
 const accessLogStream = fs.createWriteStream(
   path.join(__dirname, 'access.log'),
   { flags: 'a'}
@@ -37,6 +38,7 @@ const Order = require('./models/orders');
 const ForgotPassword = require('./models/forgotPassword');
 const Downloads = require('./models/download');
 
+app.use(express.static('public'));
 app.use(express.json()); // this is for handling json
 app.use(bodyParser.json({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -49,6 +51,7 @@ app.use('/password',passwordRoutes);
 
 app.use((req,res) => {
   console.log('URL : ',req.url);
+  console.log('Request has arrived .');
   res.sendFile(path.join(__dirname,`public/${req.url}`));
 })
 
@@ -70,6 +73,6 @@ console.log(process.env.NODE_ENV);// express.js use it as default to detrermine 
 //  {force: true}
 sequelize.sync()
 .then(result => {
-  app.listen(process.env.PORT || 5000);
+  app.listen(process.env.PORT || 3000);
 })
 .catch(err => console.log(err));
