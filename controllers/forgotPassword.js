@@ -1,7 +1,6 @@
 const uuid = require('uuid');
 const sgMail = require('@sendgrid/mail');
 const bcrypt = require('bcrypt');
-// const SENDGRID_API_KEY='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';
 const User = require('../models/user');
 const Forgotpassword = require('../models/forgotPassword');
 
@@ -13,8 +12,7 @@ const forgotpassword = async (req, res) => {
             const id = uuid.v4();
             try{
            await Forgotpassword.create({ id: id , active: true ,userId: user.id})
-           // await user.createForgotpassword({ id: id , active: true }) // not working
-           console.log(id);
+           //console.log(id);
             } catch(err) {
                     throw new Error(err)
                 }

@@ -1,5 +1,4 @@
 const token = localStorage.getItem('token'); 
-//const pagination = document.getElementById('pagination');
 const pagination= document.createElement('div');
 document.body.appendChild(pagination);
 const ShowItems =  document.getElementById('Item_Per_Page');
@@ -13,7 +12,7 @@ function ShowPerPage(){
 }
 
 let form=document.getElementById('formItem'); 
-form.addEventListener('submit',function(event){
+form.addEventListener('submit', async function(event){
   event.preventDefault()// prevent the form fromautosubmitting
     
         const myObj={
@@ -21,18 +20,14 @@ form.addEventListener('submit',function(event){
           description:event.target.Description.value,
           category:event.target.Category.value
         };
-        const Post = async () => {
           try{    
           const response = await axios.post("http://localhost:3000/expense/add-expense",myObj, { headers: {"Authorization" : token}});
           console.log(response);
           addNewExpensetoUI(response.data.addedExpense);
           } catch(err){
             console.log(err);
-          }
-        }
-        Post();  
+          } 
 })
-
 
 function addNewExpensetoUI(expense){
 const expenseElemId = `expense-${expense.id}`;
@@ -47,8 +42,7 @@ parentNode.innerHTML=children+parentNode.innerHTML;
 }
 
 //deleteUser
-function deleteExpense(expenseid){
-   const Delete = async () => {
+async function deleteExpense(expenseid){
         const response = await axios.delete(`http://localhost:3000/expense/delete-expense/${expenseid}`, { headers: {"Authorization" : token}});
         console.log(response);
         try{
@@ -60,8 +54,6 @@ function deleteExpense(expenseid){
           } catch(err) { 
             showError(err);
           }
-        }
-    Delete();
 }
 
 function showError(err){
@@ -90,7 +82,6 @@ function showPagination({
   lastPage,
 }) {
  
- 
   if(hasPreviousPage){
     const btn2 = document.createElement('button')
     btn2.innerHTML = previousPage
@@ -113,7 +104,6 @@ function showPagination({
 
 function getExpenses(page){
    console.log('ItemPerPage  is : ',`${ItemPerPage}`);
-  // &itemPerPage=${ItemPerPage}  http://localhost
        axios
              .get(`http://localhost:3000/expense/get-expense?page=${page}&itemPerPage=${ItemPerPage}`, { headers: {"Authorization" : token}})
              .then((response) => {
@@ -130,9 +120,8 @@ function getExpenses(page){
              .catch((err) => console.log(err));
 }
 
-window.addEventListener("load",()=>{
-const Get = async () => {
-        const page = 1; // &itemPerPage=${itemPerPage}
+window.addEventListener("load", async ()=>{
+        const page = 1; 
         const response = await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&itemPerPage=${ItemPerPage}`, { headers: {"Authorization" : token}});
         console.log("Nitish this is response\n");
         const isPremium = response.data.isPremiumUser == null ? false : true;
@@ -148,8 +137,6 @@ const Get = async () => {
             addNewExpensetoUI(response.data.AllExpenses[i]);
           }
         } 
-}
-Get();
 })
 
 function showLeaderBoard(name,amount){
@@ -184,13 +171,10 @@ function download(){
 }
 
 function showUrlTable(){
-  //const page =1;
-  //axios.get(`http://localhost:3000/expense/urlTable?page=${page}`,{ headers: {"Authorization" : token} })
-  //showPagination(response.data);
   axios.get(`http://localhost:3000/expense/urlTable`,{ headers: {"Authorization" : token} })
   .then((response) => {
-    if(response.status === 201) { // UrlList
-      document.getElementById('UrlList').innerHTML += 'URL Lists';
+    if(response.status === 201) { 
+      document.getElementById('UrlList').innerHTML += '<h1>URL Lists</h1>';
       for(var i=0;i<response.data.response.length;i++){
          showListOfUrl(response.data.response[i].fileUrl);
       }
@@ -204,9 +188,6 @@ function showUrlTable(){
 }
 
 async function showPremiumFeatures(){
-  // const page = 1;
-  // const response = await axios.get(`http://localhost:3000/premium/showLeaderBoard?page=${page}`, { headers: {"Authorization" : token}});
-  // showPagination(response.data);
   const response = await axios.get(`http://localhost:3000/premium/showLeaderBoard`, { headers: {"Authorization" : token}});
   document.getElementById('Leaderboard').innerHTML+=`<h1> Leaderboard <h1>`;
 

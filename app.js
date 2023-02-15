@@ -1,9 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const errorController = require('./controllers/error');
-const helmet = require('helmet');
-//const compression = require('compression');
-const morgan = require('morgan');
 const path = require('path');
 const fs = require('fs');
 
@@ -22,9 +19,6 @@ const accessLogStream = fs.createWriteStream(
 );
 
 app.use(cors());
-app.use(helmet());
-//app.use(compression()); // it is use to render view . Here we dont need it
-app.use(morgan('combined', {stream : accessLogStream}));
 
 const signupRoutes = require('./routes/user');
 const expenseRoutes = require('./routes/expense');
@@ -39,7 +33,6 @@ const ForgotPassword = require('./models/forgotPassword');
 const Downloads = require('./models/download');
 
 app.use(express.static('public'));
-app.use(express.json()); // this is for handling json
 app.use(bodyParser.json({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
 

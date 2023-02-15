@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
 const Expense = require('../models/expense');
+const User = require('../models/user');
 const Downloads = require('../models/download');
 const UserServices = require('../services/userServices');
 const S3Services = require('../services/s3services');
@@ -20,8 +21,12 @@ exports.postExpenseDetails = async (req, res) => {
      if(isstringinvalid(`${amount}`) || isstringinvalid(description) || isstringinvalid(category)){
         return res.status(400).json({message: 'Invalid details', success: false});
      } else { 
-         const data = await Expense.create({amount: amount, description: description, category: category, userId: req.user.id});
-       // const data = req.user.createExpenses({amount: amount, description: description, category: category, userId: req.user.id});
+        const data = await Expense.create({amount: amount, description: description, category: category, userId: req.user.id});
+        User.findOne({ where : { id: req.user.id }}).then(user => {
+            if(user){
+                totalExpenses = +user.totalExpenses + +amount;
+                user.update({ totalExpenses: totalExpenses});
+            }})
         return res.status(201).json({addedExpense: data});
      }
   } catch (err) {
@@ -61,11 +66,6 @@ exports.getExpenseDetails = async (req, res) => {
             });
         })
         .catch((err) => console.log(err));
-        //const expenseDetails = await Expense.findAll({where: {userId: req.user.id}});
-        // const expenseDetails = await req.user.getExpenses();
-        // if(expenseDetails){
-        //     return res.status(200).json( { AllExpenses : expenseDetails , isPremiumUser : req.user.ispremiumuser});
-        // }
     } catch (err){
         console.log(err);
         return res.status(500).json({err: 'Something went wrong', success: false});
@@ -89,17 +89,17 @@ exports.deleteExpenseDetails = async (req, res) => {
 exports.downloadexpense = async (req,res) => {
     try {
       const expenses = await UserServices.getExpenses(req); // here expenses are array. 
-      console.log(expenses);
+     // console.log(expenses);
       const stringifiedExpenses = JSON.stringify(expenses); // converting array to string 
       // filename should depend upon userid
       const userid = req.user.id;
 
       const filename = `Expense${userid}/${new Date()}.txt`;
       const fileUrl = await S3Services.uploadToS3(stringifiedExpenses, filename);
-      console.log(fileUrl);
+      //console.log(fileUrl);
       const id = uuid.v4();
       const urladdedtotable = await Downloads.create({id, fileUrl, userId:req.user.id });
-      console.log('urladdedtotable : ',urladdedtotable);
+     // console.log('urladdedtotable : ',urladdedtotable);
       res.status(201).json({ fileUrl, success: true});
     } catch(err) {
         console.log(err);

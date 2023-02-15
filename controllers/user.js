@@ -53,14 +53,14 @@ exports.postLoginDetails = async (req, res) => {
             return res.status(400).json({message: 'EmailId or Password is missing', success: false});
         }
         const user = await User.findAll({where: {email: email }}); 
-        console.log(user);
+       // console.log(user);
 
         if(user.length > 0){
             bcrypt.compare(password, user[0].password, async (err, result) => {
                 if(err){
                     return res.status(500).json({ success: false, message : 'Something went wrong'}); 
                 }
-                if(result === true){ //isPremiumUser: user[0].ispremiumuser,
+                if(result === true){ 
                     return res.status(201).json({ success: true, message: 'Login Successful', token : generateAccessToken(user[0].id, user[0].name)});
                 } else {
                     return res.status(401).json({ success: false, message : 'Password is incorrect'});
