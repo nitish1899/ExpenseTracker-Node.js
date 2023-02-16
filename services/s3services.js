@@ -6,7 +6,6 @@ const uploadToS3 = (data, filename) => {
      accessKeyId: process.env.IAM_USER_KEY,
      secretAccessKey: process.env.IAM_USER_SECRED
  })
- 
      const params = {
          Bucket: process.env.BUCKET_NAME,
          Key : filename,

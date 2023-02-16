@@ -54,7 +54,6 @@ exports.postLoginDetails = async (req, res) => {
         }
         const user = await User.findAll({where: {email: email }}); 
        // console.log(user);
-
         if(user.length > 0){
             bcrypt.compare(password, user[0].password, async (err, result) => {
                 if(err){

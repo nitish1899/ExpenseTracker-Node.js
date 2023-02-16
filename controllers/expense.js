@@ -88,8 +88,8 @@ exports.deleteExpenseDetails = async (req, res) => {
     try{ 
         const t= await sequelize.transaction();
         const expenseId = req.params.id;
-         const expense = await Expense.findByPk(expenseId);
-         if(req.user.id === expense.userId){
+        const expense = await Expense.findByPk(expenseId);
+        if(req.user.id === expense.userId){
             const result = await Expense.destroy({where: {id: expenseId}},  { transaction: t});
             User.findOne({ where : { id: req.user.id }}, { transaction: t})
             .then(user => {
@@ -127,8 +127,8 @@ exports.downloadexpense = async (req,res) => {
      // console.log('urladdedtotable : ',urladdedtotable);
       res.status(201).json({ fileUrl, success: true});
     } catch(err) {
-        console.log(err);
-        res.status(500).json({ fileUrl:'', success: false, err: err});  
+      console.log(err);
+      res.status(500).json({ fileUrl:'', success: false, err: err});  
     }  
 }    
 

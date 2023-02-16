@@ -62,7 +62,7 @@ ForgotPassword.belongsTo(User);
 User.hasMany(Downloads);
 Downloads.belongsTo(User);
 
-console.log(process.env.NODE_ENV);// express.js use it as default to detrermine environment mode
+console.log(process.env.NODE_ENV); // express.js use it as default to detrermine environment mode
 //  {force: true}
 sequelize.sync()
 .then(result => {

@@ -5,7 +5,7 @@ const User = require('../models/user');
 const getLeaderBoard = async (req,res) => {
     try{
         const users = await User.findAll({
-            attributes : ['id', 'name', 'totalExpenses']
+            attributes: ['id', 'name', 'totalExpenses']
         });
         const userLeaderBoard = [];
         users.forEach(user => {
