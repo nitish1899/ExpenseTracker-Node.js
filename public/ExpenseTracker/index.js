@@ -22,7 +22,7 @@ form.addEventListener('submit', async function(event){
         };
           try{    
           const response = await axios.post("http://localhost:3000/expense/add-expense",myObj, { headers: {"Authorization" : token}});
-          console.log(response);
+          console.log(response.data.message);
           addNewExpensetoUI(response.data.addedExpense);
           } catch(err){
             console.log(err);

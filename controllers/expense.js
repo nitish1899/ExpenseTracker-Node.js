@@ -5,6 +5,8 @@ const Downloads = require('../models/download');
 const UserServices = require('../services/userServices');
 const S3Services = require('../services/s3services');
 const uuid = require('uuid');
+const sequelize = require('../util/database');
+
 var ITEMS_PER_PAGE =2 ;
 
 function isstringinvalid(string){
@@ -17,19 +19,29 @@ function isstringinvalid(string){
 
 exports.postExpenseDetails = async (req, res) => {
   try{
+    const t= await sequelize.transaction(); // it creates transaction object
      const {amount, description, category} = req.body;
      if(isstringinvalid(`${amount}`) || isstringinvalid(description) || isstringinvalid(category)){
         return res.status(400).json({message: 'Invalid details', success: false});
      } else { 
-        const data = await Expense.create({amount: amount, description: description, category: category, userId: req.user.id});
-        User.findOne({ where : { id: req.user.id }}).then(user => {
+        const data = await Expense.create({amount: amount, description: description, category: category, userId: req.user.id}, {transaction: t});
+        User.findOne({ where : { id: req.user.id }}, { transaction: t})
+        .then(user => {
             if(user){
                 totalExpenses = +user.totalExpenses + +amount;
                 user.update({ totalExpenses: totalExpenses});
             }})
-        return res.status(201).json({addedExpense: data});
+        .then(async () => {
+            await t.commit();
+            res.status(201).json({addedExpense: data, message: "expense added"});
+        }) 
+        .catch( async (err) =>{
+            await t.rollback();
+            return res.status(500).json({message: err, success: false});
+        })   
      }
   } catch (err) {
+    await t.rollback();
     return res.status(500).json({message: 'Something went wrong', success: false});
   }
 }
@@ -73,14 +85,27 @@ exports.getExpenseDetails = async (req, res) => {
 }
 
 exports.deleteExpenseDetails = async (req, res) => {
-    try{ const uId = req.params.id;
-         const user = await Expense.findByPk(uId);
-         //console.log('element belongs to userId: ',user.dataValues.userId);
-        // console.log('logged in user id:',req.user.id)
-         if(req.user.id === user.dataValues.userId){
-            const result = await Expense.destroy({where: {id: uId}});
-             res.sendStatus(200);
-         }
+    try{ 
+        const t= await sequelize.transaction();
+        const expenseId = req.params.id;
+         const expense = await Expense.findByPk(expenseId);
+         if(req.user.id === expense.userId){
+            const result = await Expense.destroy({where: {id: expenseId}},  { transaction: t});
+            User.findOne({ where : { id: req.user.id }}, { transaction: t})
+            .then(user => {
+                if(user){
+                    totalExpenses = +user.totalExpenses - +expense.amount;
+                    user.update({ totalExpenses: totalExpenses});
+                }})
+            .then(async () => {
+                await t.commit();
+                res.status(200).json({ message: "expense deleted"});
+            }) 
+            .catch( async (err) =>{
+                await t.rollback();
+                return res.status(500).json({message: err, success: false});
+            })    
+        }
     } catch (err) {
         return res.status(500).json({err: 'Something went wrong', success: false});
     }
