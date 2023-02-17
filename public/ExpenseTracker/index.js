@@ -20,8 +20,12 @@ form.addEventListener('submit', async function(event){
           description:event.target.Description.value,
           category:event.target.Category.value
         };
+
+        document.getElementById('ExpanseAmount').value = "";
+        document.getElementById('Description').value = "";
+
           try{    
-          const response = await axios.post("http://13.235.134.206:3000/expense/add-expense",myObj, { headers: {"Authorization" : token}});
+          const response = await axios.post("http://localhost:3000/expense/add-expense",myObj, { headers: {"Authorization" : token}});
           console.log(response.data.message);
           addNewExpensetoUI(response.data.addedExpense);
           } catch(err){
@@ -43,7 +47,7 @@ parentNode.innerHTML=children+parentNode.innerHTML;
 
 //deleteUser
 async function deleteExpense(expenseid){
-        const response = await axios.delete(`http://13.235.134.206:3000/expense/delete-expense/${expenseid}`, { headers: {"Authorization" : token}});
+        const response = await axios.delete(`http://localhost:3000/expense/delete-expense/${expenseid}`, { headers: {"Authorization" : token}});
         console.log(response);
         try{
             if(response.status === 200){
@@ -104,7 +108,7 @@ function showPagination({
 function getExpenses(page){
    console.log('ItemPerPage  is : ',`${ItemPerPage}`);
        axios
-             .get(`http://13.235.134.206:3000/expense/get-expense?page=${page}&itemPerPage=${ItemPerPage}`, { headers: {"Authorization" : token}})
+             .get(`http://localhost:3000/expense/get-expense?page=${page}&itemPerPage=${ItemPerPage}`, { headers: {"Authorization" : token}})
              .then((response) => {
               pagination.innerHTML = '';
               showPagination(response.data);
@@ -121,7 +125,7 @@ function getExpenses(page){
 
 window.addEventListener("load", async ()=>{
         const page = 1; 
-        const response = await axios.get(`http://13.235.134.206:3000/expense/get-expense?page=${page}&itemPerPage=${ItemPerPage}`, { headers: {"Authorization" : token}});
+        const response = await axios.get(`http://localhost:3000/expense/get-expense?page=${page}&itemPerPage=${ItemPerPage}`, { headers: {"Authorization" : token}});
         console.log("Nitish this is response\n");
         const isPremium = response.data.isPremiumUser == null ? false : true;
         if(isPremium){
@@ -139,6 +143,7 @@ window.addEventListener("load", async ()=>{
 })
 
 function showLeaderBoard(name,amount){
+    document.getElementById('leaderboardDetails')="";
     const parentNode=document.getElementById('leaderboardDetails');
     const children=`<li id="${name}"> Name : ${name} , Amount : ${amount} </li>`;// unique id for li tag is necessary
     parentNode.innerHTML=parentNode.innerHTML+children;
@@ -151,7 +156,7 @@ function showListOfUrl(url){
 }
 
 function download(){
-  axios.get('http://13.235.134.206:3000/expense/download',{ headers: {"Authorization" : token} })
+  axios.get('http://localhost:3000/expense/download',{ headers: {"Authorization" : token} })
   .then((response) => {
     if(response.status === 201) { 
       // the backend is essentially sending a downloading link
@@ -170,7 +175,7 @@ function download(){
 }
 
 function showUrlTable(){
-  axios.get(`http://13.235.134.206:3000/expense/urlTable`,{ headers: {"Authorization" : token} })
+  axios.get(`http://localhost:3000/expense/urlTable`,{ headers: {"Authorization" : token} })
   .then((response) => {
     if(response.status === 201) { 
       document.getElementById('UrlList').innerHTML += '<h1>URL Lists</h1>';
@@ -187,7 +192,8 @@ function showUrlTable(){
 }
 
 async function showPremiumFeatures(){
-  const response = await axios.get(`http://13.235.134.206:3000/premium/showLeaderBoard`, { headers: {"Authorization" : token}});
+  const response = await axios.get(`http://localhost:3000/premium/showLeaderBoard`, { headers: {"Authorization" : token}});
+  document.getElementById('Leaderboard').innerHTML="";
   document.getElementById('Leaderboard').innerHTML+=`<h1> Leaderboard <h1>`;
 
   for(var i=0;i<response.data.length;i++){
@@ -197,14 +203,14 @@ async function showPremiumFeatures(){
 }
 
 document.getElementById('rzp-button1').onclick = async function(e) {
-    const response = await axios.get('http://13.235.134.206:3000/purchase/premiummembership', { headers: {"Authorization" : token}});
+    const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: {"Authorization" : token}});
     console.log(response);
     var options = {
         "key": response.data.key_id,// enter the key id generated from Dashboard 
         "order_id": response.data.order.id, // for one time payment
         // this handler function will handle the success payment
         "handler": async function(response){
-            await axios.post('http://13.235.134.206:3000/purchase/updatetransactionstatusSuccess', {
+            await axios.post('http://localhost:3000/purchase/updatetransactionstatusSuccess', {
                 order_id: options.order_id,
                 payment_id: response.razorpay_payment_id,
             }, { headers: {"Authorization" : token} })
@@ -222,7 +228,7 @@ document.getElementById('rzp-button1').onclick = async function(e) {
 
     rzp1.on('payment.failed', async function (response) {
       console.log(response);
-      await axios.post('http://13.235.134.206:3000/purchase/updatetransactionstatusFail', {
+      await axios.post('http://localhost:3000/purchase/updatetransactionstatusFail', {
                 order_id: options.order_id,
             }, { headers: {"Authorization" : token} })
       alert('Transaction Failed');
