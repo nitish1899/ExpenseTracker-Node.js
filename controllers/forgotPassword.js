@@ -66,19 +66,18 @@ const resetpassword = (req, res) => {
                                     </script>
                                     <form action="/password/updatepassword/${id}" method="get">
                                         <label for="newpassword">Enter New password</label>
-                                        <input name="newpassword" type="password" required></input>
+                                        <input type="password" name="newpassword" required></input>
                                         <button>reset password</button>
                                     </form>
                                 </html>`
                                 )
-            res.end()
+            res.end() // This will end the response process without any data.
 
         }
     })
 }
 
 const updatepassword = (req, res) => {
-
     try {
         const { newpassword } = req.query;
         const { resetpasswordid } = req.params;
@@ -87,7 +86,6 @@ const updatepassword = (req, res) => {
                 console.log('userDetails', user)
                 if(user) {
                     //encrypt the password
-
                     const saltRounds = 10;
                     bcrypt.genSalt(saltRounds, function(err, salt) {
                         if(err){
@@ -102,21 +100,18 @@ const updatepassword = (req, res) => {
                             }
                             user.update({ password: hash }).then(() => {
                                 res.status(201).json( 'Successfuly update the new password' );
-                               // res.status(201).json({message: 'Successfuly update the new password'})
                             })
                         });
                     });
-            } else{
-                return res.status(404).json({ error: 'No user Exists', success: false})
-            }
+                } else{
+                       return res.status(404).json({ error: 'No user Exists', success: false})
+                }
             })
         })
     } catch(error){
         return res.status(403).json({ error, success: false } )
     }
-
 }
-
 
 module.exports = {
     forgotpassword,

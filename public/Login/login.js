@@ -12,7 +12,7 @@ async function login(event) {
         console.log(response.data.message)
         alert(response.data.message);
         localStorage.setItem('token', response.data.token);
-        window.location.href='../ExpenseTracker/index.html';
+        window.location.href='../ExpenseTracker/Index.html';
     } catch(err) {
         document.body.innerHTML += `<div style="color:red;">${err} </div>`;
     }

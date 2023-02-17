@@ -20,6 +20,10 @@ form.addEventListener('submit', async function(event){
           description:event.target.Description.value,
           category:event.target.Category.value
         };
+       
+        document.getElementById('ExpanseAmount').value = "";
+        document.getElementById('Description').value = "";
+
           try{    
           const response = await axios.post("http://13.235.134.206:3000/expense/add-expense",myObj, { headers: {"Authorization" : token}});
           console.log(response.data.message);
@@ -145,6 +149,7 @@ function showLeaderBoard(name,amount){
 }
 
 function showListOfUrl(url){
+  document.getElementById('listOfURL') = "";
   const parentNode=document.getElementById('listOfURL');
   const children=`<li id="${url}"> url : ${url}</li>`;// unique id for li tag is necessary
   parentNode.innerHTML=parentNode.innerHTML+children;
@@ -188,6 +193,7 @@ function showUrlTable(){
 
 async function showPremiumFeatures(){
   const response = await axios.get(`http://13.235.134.206:3000/premium/showLeaderBoard`, { headers: {"Authorization" : token}});
+  document.getElementById('Leaderboard').innerHTML="";
   document.getElementById('Leaderboard').innerHTML+=`<h1> Leaderboard <h1>`;
 
   for(var i=0;i<response.data.length;i++){
@@ -216,7 +222,7 @@ document.getElementById('rzp-button1').onclick = async function(e) {
             alert('You are a Premier User Now');
         },
     };
-    const rzp1 = new Razorpay(options);
+    const rzp1 = new Razorpay(options); // Razorpay is a javascript method
     rzp1.open();
     e.preventDefault();
 
