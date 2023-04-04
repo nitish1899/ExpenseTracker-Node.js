@@ -1,14 +1,14 @@
 {
-  "name": "nodejs-complete-guide",
+  "name": "Expense_Tracker_Project",
   "version": "1.0.0",
-  "description": "Complete Node.js Guide",
+  "description": "Complete Express.js guide",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js",
     "start-server": "node app.js"
   },
-  "author": "Maximilian Schwarzmüller",
+  "author": "Nitish Kumar",
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^1.18.3"
@@ -20,9 +20,8 @@
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "ejs": "^2.6.1",
     "express": "^4.18.2",
-    "express-handlebars": "^3.0.0",
+    "express-handlebars": "^3.1.0",
     "jsonwebtoken": "^9.0.0",
     "mysql2": "^2.3.3",
     "razorpay": "^2.8.4",
