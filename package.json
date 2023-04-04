@@ -21,12 +21,11 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "express-handlebars": "^3.1.0",
+    "express-handlebars": "^5.3.1",
     "jsonwebtoken": "^9.0.0",
     "mysql2": "^2.3.3",
     "razorpay": "^2.8.4",
     "sequelize": "^6.28.0",
     "uuid": "^9.0.0"
   }
-  
 }
